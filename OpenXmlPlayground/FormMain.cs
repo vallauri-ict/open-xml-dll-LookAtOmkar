@@ -1,10 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows.Forms;
 
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
+using OpenXmlPlayground;
 using Color = DocumentFormat.OpenXml.Wordprocessing.Color;
+using System.Xml;
+using System.IO;
+
 
 namespace OpenXmlPlayground
 {
@@ -13,7 +19,9 @@ namespace OpenXmlPlayground
         public FormMain()
         {
             InitializeComponent();
+            
         }
+
 
         private void btnSimpleWordTest_Click(object sender, EventArgs e)
         {
@@ -21,21 +29,25 @@ namespace OpenXmlPlayground
             {
                 string filepath = "test.docx";
                 string msg = "Hello World!";
-                using (WordprocessingDocument doc = WordprocessingDocument.Create(filepath,
-                                    DocumentFormat.OpenXml.WordprocessingDocumentType.Document))
+                using (WordprocessingDocument doc = WordprocessingDocument.Create(filepath, WordprocessingDocumentType.Document))
                 {
+                    #region Document
                     // Add a main document part. 
                     MainDocumentPart mainPart = doc.AddMainDocumentPart();
 
                     // Create the document structure and add some text.
                     mainPart.Document = new Document();
                     Body body = mainPart.Document.AppendChild(new Body());
+                    #endregion
 
+                    #region Style
                     // Define the styles
-                    addHeading1Style(mainPart);
+                    ClsOpenXmlUtilites.AddStyle(mainPart, false, true, true, "MyHeading1", "Titolone", "Verdana", 30, "0000FF");
+                    ClsOpenXmlUtilites.AddStyle(mainPart, true, false, false, "MyTypescript", "Macchina da scrivere", "Courier New", 10, "333333");
 
-                    // Add heading
-                    Paragraph headingPar = createHeading("Testo semplice");
+                    // Add MyHeading1 styled text
+                    Paragraph headingPar = ClsOpenXmlUtilites.CreateParagraphWithStyle("MyHeading1", JustificationValues.Center);
+                    ClsOpenXmlUtilites.AddTextToParagraph(headingPar, "Titolo con stile applicato");
                     body.AppendChild(headingPar);
 
                     // Add simple text
@@ -44,66 +56,54 @@ namespace OpenXmlPlayground
                     // String msg contains the text, "Hello, Word!"
                     run.AppendChild(new Text(msg));
 
-                    // Add heading
-                    headingPar = createHeading("Testo con stili");
-                    body.AppendChild(headingPar);
+                    // Add MyTypescript styled text
+
+                    Paragraph typescriptParagraph = ClsOpenXmlUtilites.CreateParagraphWithStyle("MyTypescript", JustificationValues.Left);
+                    ClsOpenXmlUtilites.AddTextToParagraph(typescriptParagraph, "È universalmente riconosciuto che un lettore che osserva il layout di una pagina viene distratto dal contenuto testuale se questo è leggibile. Lo scopo dell’utilizzo del Lorem Ipsum è che offre una normale distribuzione delle lettere (al contrario di quanto avviene se si utilizzano brevi frasi ripetute, ad esempio “testo qui”), apparendo come un normale blocco di testo leggibile. Molti software di impaginazione e di web design utilizzano Lorem Ipsum come testo modello. Molte versioni del testo sono state prodotte negli anni, a volte casualmente, a volte di proposito (ad esempio inserendo passaggi ironici).");
+                    body.AppendChild(typescriptParagraph);
 
                     // Append a paragraph with styles
                     Paragraph newPar = createParagraphWithStyles();
                     body.AppendChild(newPar);
+                    #endregion
 
-                    //Append a table
-                    Table myTable = createTable();
-                    body.AppendChild(myTable);
+                    #region Table
+                    // Append a table
+                    bool[] bolds = { false, true, false, false };
+                    bool[] italics = { false, false, false, false };
+                    bool[] underlines = { false, false, false, false };
+                    string[] texts1 = { "A", "Nice", "Little", "Table" };
+                    JustificationValues[] justifications = { JustificationValues.Left, JustificationValues.Left, JustificationValues.Left, JustificationValues.Center };
+                    Table myTable = ClsOpenXmlUtilites.createTable(mainPart, bolds, italics, underlines, texts1, justifications, 2, 2, "CC0000");
+                    body.Append(myTable);
+                    #endregion
+
+                    #region List and Image
+                    // Append bullet list
+                    string[] texts2 = { "First element", "Second Element", "Third Element" };
+                    ClsOpenXmlUtilites.CreateBulletNumberingPart(mainPart);
+                    List<Paragraph> bulletList = new List<Paragraph>();
+                    ClsOpenXmlUtilites.CreateBulletOrNumberedList(100, 200, bulletList, texts2.Length, texts2);
+                    foreach (Paragraph paragraph in bulletList)
+                        body.Append(paragraph);
+
+                    // Append numbered list
+                    List<Paragraph> numberedList = new List<Paragraph>();
+                    ClsOpenXmlUtilites.CreateBulletOrNumberedList(100, 240, numberedList, texts2.Length, texts2, false);
+                    foreach (Paragraph paragraph in numberedList)
+                        body.Append(paragraph);
+
+                    // Append image
+                    ClsOpenXmlUtilites.InsertPicture(doc, "panorama.jpg");
+                    #endregion
                 }
-                MessageBox.Show("IL DOCUMENTO E' PRONTO");
+                MessageBox.Show("Il documento è pronto!");
+                Process.Start(filepath);
             }
             catch (Exception)
             {
-                MessageBox.Show("SEI SCEMO");
+                MessageBox.Show("Problemi col documento. Se è aperto da un altro programma, chiudilo e riprova...");
             }
-
-        
-        }
-
-        private void addHeading1Style(MainDocumentPart mainPart)
-        {
-            // we have to set the properties
-            RunProperties rPr = new RunProperties();
-            Color color = new Color() { Val = "FF0000" }; // the color is red
-            RunFonts rFont = new RunFonts();
-            rFont.Ascii = "Arial"; // the font is Arial
-            rPr.Append(color);
-            rPr.Append(rFont);
-            rPr.Append(new Bold()); // it is Bold
-            rPr.Append(new FontSize() { Val = "28" }); //font size (in 1/72 of an inch)
-
-            Style style = new Style();
-            style.StyleId = "MyHeading1"; //this is the ID of the style
-            style.Append(new Name() { Val = "My Heading 1" }); //this is the name of the new style
-            style.Append(rPr); //we are adding properties previously defined
-
-            // we have to add style that we have created to the StylePart
-            StyleDefinitionsPart stylePart = mainPart.AddNewPart<StyleDefinitionsPart>();
-            stylePart.Styles = new Styles();
-            stylePart.Styles.Append(style);
-            stylePart.Styles.Save(); // we save the style part
-        }
-
-        private Paragraph createHeading(string content)
-        {
-            Paragraph heading = new Paragraph();
-            Run r = new Run();
-            Text t = new Text(content);
-            ParagraphProperties pp = new ParagraphProperties();
-            // we set the style
-            pp.ParagraphStyleId = new ParagraphStyleId() { Val = "MyHeading1" };
-            // we set the alignement
-            pp.Justification = new Justification() { Val = JustificationValues.Center };
-            heading.Append(pp);
-            r.Append(t);
-            heading.Append(r);
-            return heading;
         }
 
         private Paragraph createParagraphWithStyles()
@@ -190,128 +190,6 @@ namespace OpenXmlPlayground
 
             // return the new paragraph
             return p;
-        }
-
-        private Table createTable()
-        {
-            Table table = new Table();
-            table.AppendChild(getTableProperties());
-            
-            //row1
-            TableRow tr1 = new TableRow();
-            TableCell tc1 = new TableCell();
-            Paragraph p11 = new Paragraph(new Run(new Text("A")));
-            tc1.Append(p11);
-            tr1.Append(tc1);
-            table.Append(tr1);
-
-            TableCell tc12 = new TableCell();
-            Paragraph p12 = new Paragraph();
-            Run r12 = new Run();
-            RunProperties rp12 = new RunProperties();
-            rp12.Bold = new Bold();
-            r12.Append(rp12);
-            r12.Append(new Text("Nice"));
-            p12.Append(r12);
-            tc12.Append(p12);
-
-            //row2
-            TableRow tr2 = new TableRow();
-
-
-            TableCell tc21 = new TableCell();
-            Paragraph p21 = new Paragraph(new Run(new Text("Little")));
-            tc21.Append(p21);
-            tr2.Append(tc21);
-
-            TableCell tc22 = new TableCell();
-            Paragraph p22 = new Paragraph();
-            ParagraphProperties pp22 = new ParagraphProperties();
-            pp22.Justification = new Justification() { Val = JustificationValues.Center };
-            p22.Append(pp22);
-            p22.Append(new Run(new Text("Table")));
-            tc22.Append(p22);
-
-            tr2.Append(tc22);
-            table.Append(tr2);
-
-            return table;
-        }
-        
-        private TableProperties getTableProperties()
-        {
-            TableProperties tblProperties = new TableProperties();
-
-
-
-            //// Create Table Borders
-
-            TableBorders tblBorders = new TableBorders();
-
-
-
-            TopBorder topBorder = new TopBorder();
-
-            topBorder.Val = new EnumValue<BorderValues>(BorderValues.Thick);
-
-            topBorder.Color = "CC0000";
-
-            tblBorders.AppendChild(topBorder);
-
-
-
-            BottomBorder bottomBorder = new BottomBorder();
-
-            bottomBorder.Val = new EnumValue<BorderValues>(BorderValues.Thick);
-
-            bottomBorder.Color = "CC0000";
-
-            tblBorders.AppendChild(bottomBorder);
-
-
-
-            RightBorder rightBorder = new RightBorder();
-
-            rightBorder.Val = new EnumValue<BorderValues>(BorderValues.Thick);
-
-            rightBorder.Color = "CC0000";
-
-            tblBorders.AppendChild(rightBorder);
-
-
-
-            LeftBorder leftBorder = new LeftBorder();
-
-            leftBorder.Val = new EnumValue<BorderValues>(BorderValues.Thick);
-
-            leftBorder.Color = "CC0000";
-
-            tblBorders.AppendChild(leftBorder);
-
-
-
-            InsideHorizontalBorder insideHBorder = new InsideHorizontalBorder();
-
-            insideHBorder.Val = new EnumValue<BorderValues>(BorderValues.Thick);
-
-            insideHBorder.Color = "CC0000";
-
-            tblBorders.AppendChild(insideHBorder);
-
-
-
-            InsideVerticalBorder insideVBorder = new InsideVerticalBorder();
-
-            insideVBorder.Val = new EnumValue<BorderValues>(BorderValues.Thick);
-
-            insideVBorder.Color = "CC0000";
-
-            tblBorders.AppendChild(insideVBorder);
-
-
-
-
-            return tblProperties;
         }
     }
 }
