@@ -1,11 +1,12 @@
 #                                              OPEN-XML-DLL
 *Quì troviamo un progetto realizzato in C# "OpenXml", in cui attraverso i codici andiamo a creare un file di Word scritto,come facciamo noi normalmente sull'app di microsoft office.*
 *Abbiamo usato DLL(Dynamic Link Library) per:*
-*  semplificare la lettura dei codici presenti nel progetto
-*  la programmazione senza complicità
-*  la sua realizzazione con comodità.
+1.  semplificare la lettura dei codici presenti nel progetto
+2.  la programmazione senza complicità
+3. la sua realizzazione con comodità.
 
 **OPEN-XML-WORD**
+
 *nella DLL del progetto OpenXml di Word contengono:*
 
 * public static void InsertPicture(WordprocessingDocument wordprocessingDocument, string fileName){...}
@@ -17,6 +18,7 @@
 *Poi ci sono altri, ma diciamo che questi sono abbastanza importanti per quanto riguarda Word*
 
 **OPEN-XML-EXCEL**
+
 *Nella DLL del progetto OpenXml di Excel contengono:*
 
 * public static void CreateExcelFile(TestModelList data, string OutPutFileDirectory){...}
