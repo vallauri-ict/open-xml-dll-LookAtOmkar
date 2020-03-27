@@ -1,0 +1,11 @@
+D:\Scuola-4B INF\INFORMATICA\MS OFFICE\OpenXmlExcelSolution\OpenXmlExcel\bin\Debug\OpenXmlExcel.exe.config
+D:\Scuola-4B INF\INFORMATICA\MS OFFICE\OpenXmlExcelSolution\OpenXmlExcel\bin\Debug\OpenXmlExcel.exe
+D:\Scuola-4B INF\INFORMATICA\MS OFFICE\OpenXmlExcelSolution\OpenXmlExcel\bin\Debug\OpenXmlExcel.pdb
+D:\Scuola-4B INF\INFORMATICA\MS OFFICE\OpenXmlExcelSolution\OpenXmlExcel\bin\Debug\DocumentFormat.OpenXml.dll
+D:\Scuola-4B INF\INFORMATICA\MS OFFICE\OpenXmlExcelSolution\OpenXmlExcel\bin\Debug\System.IO.Packaging.dll
+D:\Scuola-4B INF\INFORMATICA\MS OFFICE\OpenXmlExcelSolution\OpenXmlExcel\bin\Debug\DocumentFormat.OpenXml.xml
+D:\Scuola-4B INF\INFORMATICA\MS OFFICE\OpenXmlExcelSolution\OpenXmlExcel\bin\Debug\System.IO.Packaging.xml
+D:\Scuola-4B INF\INFORMATICA\MS OFFICE\OpenXmlExcelSolution\OpenXmlExcel\obj\Debug\OpenXmlExcel.csprojAssemblyReference.cache
+D:\Scuola-4B INF\INFORMATICA\MS OFFICE\OpenXmlExcelSolution\OpenXmlExcel\obj\Debug\OpenXmlExcel.csproj.CopyComplete
+D:\Scuola-4B INF\INFORMATICA\MS OFFICE\OpenXmlExcelSolution\OpenXmlExcel\obj\Debug\OpenXmlExcel.exe
+D:\Scuola-4B INF\INFORMATICA\MS OFFICE\OpenXmlExcelSolution\OpenXmlExcel\obj\Debug\OpenXmlExcel.pdb
